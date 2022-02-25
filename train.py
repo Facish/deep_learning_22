@@ -1,0 +1,1 @@
+python ./transformers/examples/pytorch/language-modeling/run_clm.py --model_name_or_path=rinna/japanese-gpt-1b --train_file=./dataset/train.txt --validation_file=./dataset/dev.txt --do_train --do_eval --num_train_epochs=3 --save_steps=5000 --save_total_limit=3 --per_device_train_batch_size=1 --per_device_eval_batch_size=1 --output_dir=./models/ --use_fast_tokenizer=False
