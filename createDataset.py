@@ -51,10 +51,7 @@ def to_line(data):
     genre_id = data["genre_id"]
 
     assert len(title) > 0 and len(body) > 0
-    line = spacial_tokens_map["bos_token"] + title + \
-           spacial_tokens_map["sep_token"] + body + \
-           spacial_tokens_map["sep_token"] + f"{genre_id}" + spacial_tokens_map["eos_token"]
-    return line
+    return f"{title}\t{body}\t{genre_id}"
 
 def createDataset():
     genre_files_list = [[] for genre in target_genres]
@@ -86,9 +83,9 @@ def createDataset():
     data_size = len(all_data)
     train_ratio, dev_ratio, test_ratio = 0.8, 0.1, 0.1
 
-    with open(f"./dataset/train.txt", "w", encoding="utf-8") as f_train, \
-         open(f"./dataset/dev.txt", "w", encoding="utf-8") as f_dev, \
-         open(f"./dataset/test.txt", "w", encoding="utf-8") as f_test:
+    with open(f"./dataset/train.tsv", "w", encoding="utf-8") as f_train, \
+         open(f"./dataset/dev.tsv", "w", encoding="utf-8") as f_dev, \
+         open(f"./dataset/test.tsv", "w", encoding="utf-8") as f_test:
         
         for i, data in tqdm(enumerate(all_data)):
             line = to_line(data)
