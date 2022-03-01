@@ -21,3 +21,9 @@ python train.py
 python test.py
 ```
 
+## Reference
+[google/mt5-small](https://huggingface.co/google/mt5-small)
+
+[livedoor news corpus](https://www.rondhuit.com/download.html#ldcc)
+
+[t5-japanese-classification](https://colab.research.google.com/github/sonoisa/t5-japanese/blob/main/t5_japanese_classification.ipynb)
