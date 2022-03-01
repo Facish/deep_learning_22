@@ -4,19 +4,19 @@
 Fine tune T5 by livedoor news corpus
 
 ## Usage
-Prepare
+**Prepare**
 ```
 !wget -O ./model/ldcc-20140209.tar.gz https://www.rondhuit.com/download/ldcc-20140209.tar.gz
 ```
-Create dataset
+**Create dataset**
 ```
 python createDataset.py
 ```
-Train
+**Train**
 ```
 python train.py
 ```
-Test
+**Test**
 ```
 python test.py
 ```
