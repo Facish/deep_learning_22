@@ -62,25 +62,3 @@ class TsvDataset(Dataset):
 
                 self.inputs.append(tokenized_inputs)
                 self.targets.append(tokenized_targets)
-
-
-if __name__ == '__main__':
-    # トークナイザー（SentencePiece）モデルの読み込み
-    tokenizer = AutoTokenizer.from_pretrained("google/mt5-small")
-    # テストデータセットの読み込み
-    train_dataset = TsvDataset(tokenizer, ".\dataset", "train.tsv", 
-                            input_max_len=512, target_max_len=4)
-
-    for data in train_dataset:
-        print("A. 入力データの元になる文字列")
-        print(tokenizer.decode(data["source_ids"]))
-        print()
-        print("B. 入力データ（Aの文字列がトークナイズされたトークンID列）")
-        print(data["source_ids"])
-        print()
-        print("C. 出力データの元になる文字列")
-        print(tokenizer.decode(data["target_ids"]))
-        print()
-        print("D. 出力データ（Cの文字列がトークナイズされたトークンID列）")
-        print(data["target_ids"])
-        break
