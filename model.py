@@ -16,15 +16,15 @@ class T5FineTuner(pl.LightningModule):
         super().__init__()
         self._hparams = hparams
 
-        # 事前学習済みモデルの読み込み
+        # Loading a pre-trained model
         self.model = AutoModelForSeq2SeqLM.from_pretrained(hparams.model_name_or_path)
 
-        # トークナイザーの読み込み
+        # Loading a tokernizer
         self.tokenizer = T5Tokenizer.from_pretrained(hparams.tokenizer_name_or_path, is_fast=True)
 
+    # forward propagation
     def forward(self, input_ids, attention_mask=None, decoder_input_ids=None, 
                 decoder_attention_mask=None, labels=None):
-        """順伝搬"""
         return self.model(
             input_ids,
             attention_mask=attention_mask,
@@ -33,8 +33,8 @@ class T5FineTuner(pl.LightningModule):
             labels=labels
         )
 
+    # loss calculation
     def _step(self, batch):
-        """ロス計算"""
         labels = batch["target_ids"]
 
         # All labels set to -100 are ignored (masked), 
@@ -52,35 +52,22 @@ class T5FineTuner(pl.LightningModule):
         return loss
 
     def training_step(self, batch, batch_idx):
-        """訓練ステップ処理"""
         loss = self._step(batch)
         self.log("train_loss", loss)
         return {"loss": loss}
 
     def validation_step(self, batch, batch_idx):
-        """バリデーションステップ処理"""
         loss = self._step(batch)
         self.log("val_loss", loss)
         return {"val_loss": loss}
 
-    # def validation_epoch_end(self, outputs):
-    #     """バリデーション完了処理"""
-    #     avg_loss = torch.stack([x["val_loss"] for x in outputs]).mean()
-    #     self.log("val_loss", avg_loss, prog_bar=True)
-
     def test_step(self, batch, batch_idx):
-        """テストステップ処理"""
         loss = self._step(batch)
         self.log("test_loss", loss)
         return {"test_loss": loss}
 
-    # def test_epoch_end(self, outputs):
-    #     """テスト完了処理"""
-    #     avg_loss = torch.stack([x["test_loss"] for x in outputs]).mean()
-    #     self.log("test_loss", avg_loss, prog_bar=True)
-
+    # Create an optimizer and scheduler
     def configure_optimizers(self):
-        """オプティマイザーとスケジューラーを作成する"""
         model = self.model
         no_decay = ["bias", "LayerNorm.weight"]
         optimizer_grouped_parameters = [
@@ -106,8 +93,8 @@ class T5FineTuner(pl.LightningModule):
 
         return [optimizer], [{"scheduler": scheduler, "interval": "step", "frequency": 1}]
 
+    # Create dataset
     def get_dataset(self, tokenizer, type_path, args):
-        """データセットを作成する"""
         return TsvDataset(
             tokenizer=tokenizer, 
             data_dir=args.data_dir, 
@@ -115,8 +102,8 @@ class T5FineTuner(pl.LightningModule):
             input_max_len=args.max_input_length,
             target_max_len=args.max_target_length)
     
+    # Setup (read dataset)
     def setup(self, stage=None):
-        """初期設定（データセットの読み込み）"""
         if stage == 'fit' or stage is None:
             train_dataset = self.get_dataset(tokenizer=self.tokenizer, 
                                              type_path="train.tsv", args=self._hparams)
@@ -133,13 +120,11 @@ class T5FineTuner(pl.LightningModule):
             )
 
     def train_dataloader(self):
-        """訓練データローダーを作成する"""
         return DataLoader(self.train_dataset, 
                           batch_size=self._hparams.train_batch_size, 
                           drop_last=True, shuffle=True, num_workers=4)
 
     def val_dataloader(self):
-        """バリデーションデータローダーを作成する"""
         return DataLoader(self.val_dataset, 
                           batch_size=self._hparams.eval_batch_size, 
                           num_workers=4)

@@ -3,6 +3,7 @@ import re
 import unicodedata
 
 # based on: https://github.com/neologd/mecab-ipadic-neologd/wiki/Regexp.ja
+
 def unicode_normalize(cls, s):
     pt = re.compile('([{}]+)'.format(cls))
 
